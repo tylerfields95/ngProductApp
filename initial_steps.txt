@@ -1,0 +1,70 @@
+* Generating the database
+    * the DB setup for this project consists of a simple postgreSQL container hosted locally.
+        * the docker compose file for this was generated for a previous personal project using ChatGPT
+        * username, password, and db name are safetly read from a .env during docker compose
+            * .env is excluded from git while .env.example is tracked
+
+
+* API layer 
+    * Generate a new ASP.NET Core Web API project in the workspace's API folder
+    * create models and dto folder
+    * add the following packages
+        * Npgsql.EntityFrameworkCore.PostgreSQL (v8.0.11) - The PostgreSQL database provider for EF Core
+        * Microsoft.EntityFrameworkCore.Tools (v8.0.11) - Enables migration commands (Add-Migration, Update-Database)
+        * Microsoft.EntityFrameworkCore.Design (v8.0.11) - Required for design-time operations and scaffolding
+        * DotNetEnv (3.1.1)
+    * generate an empty DbContext 
+        *registerDb context in program.cs
+    * register env information in program.cs
+    * Update App Settings.json to include DB connection read from env variables
+    * initialize migration state 
+        * dotnet ef migrations add InitialMigration
+        * dotnet ef database update
+    * generate models for product and category
+        * fk relationship between product and category
+        * add indexes on commonly filtered columns
+    * add migration for product and category
+        * dotnet ef migrations add AddCategoriesAndProducts
+        * dotnet ef database update
+    * generate Seed data for categories 
+        * script in database/scripts
+    * generate Seed data for producs 
+        * script in database/scripts
+    * generate DTOs for the models
+    * generate a service for the categories
+        * getAll
+        * getById
+        * createCategory
+    * register service in program.cs
+    * generate categories controller
+        * getAll
+        * getById
+        * createCategory
+        * test with swagger
+    * Generate Products service
+        * GetAllActive
+            * implement a simple pagenation object to avoid pulling in 100k results
+        * GetById
+        * Create
+        * update
+        * delete 
+    * Generate Product Controller
+        * ensure 404 errors are thrown
+    * Generate Search pruduct function and implement in controller
+        * force claude to code review it with the lense of getting fast results with 100k rows in the DB
+    * update UseExceptionHandler middleware to ensure consistent error returns
+
+
+* Angular Client
+    * generate new angular 20 app with CLI
+        * NG new practiceClient
+    * install pnpm
+    * install bootstrap
+        * add bootstrap stylesheet to angular.json styles section
+    * generate a new home page that 
+    * generate product, category, and paginatedResult interfaces
+
+
+* add git ignore
+    * no node modules or env + common temp file locations
+

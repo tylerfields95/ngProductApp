@@ -2,7 +2,7 @@
 
 A full-stack product management application built with .NET Core Web API and Angular, featuring a searchable product catalog with category management and pagination.
 
-![Application Preview](./images/preview.png)
+![Application Preview](./screenshots/preview.png)
 *Dark-themed product search interface with advanced filtering and pagination*
 
 ## Quick Start

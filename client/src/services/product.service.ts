@@ -1,87 +1,172 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { tap } from 'rxjs/operators';
 import { Product, PaginatedResult, ProductSearchParams } from '../models';
+import { ProductHttpService } from './product-http.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
-  // targetting http for now
-  private apiUrl = 'http://localhost:5258/api/product'; // Update with your API URL
+  private readonly DEFAULT_PAGE = 1;
+  private readonly DEFAULT_PAGE_SIZE = 50;
 
-  constructor(private http: HttpClient) {}
+  // Minimal signal-based state management
+  private resultSignal = signal<PaginatedResult<Product> | null>(null);
+  private loadingSignal = signal<boolean>(false);
 
-  /**
-   * Get all active products with pagination
-   */
-  getAll(
-    page: number = 1,
-    pageSize: number = 50
-  ): Observable<PaginatedResult<Product>> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('pageSize', pageSize.toString());
+  // Store current search parameters to preserve them across page changes
+  private currentSearchParams: ProductSearchParams = {};
 
-    return this.http.get<PaginatedResult<Product>>(this.apiUrl, { params });
+  // Public readonly signals
+  readonly result = this.resultSignal.asReadonly();
+  readonly loading = this.loadingSignal.asReadonly();
+
+  constructor(private productHttp: ProductHttpService) {
+    // Load initial data
+    this.searchProducts({});
   }
 
   /**
-   * Get product by ID
+   * Load product by ID
    */
-  getById(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/${id}`);
+  loadProductById(id: number): void {
+    this.loadingSignal.set(true);
+
+    this.productHttp
+      .getById(id)
+      .pipe(
+        tap({
+          next: () => {
+            this.loadingSignal.set(false);
+          },
+          error: () => {
+            this.loadingSignal.set(false);
+          },
+        })
+      )
+      .subscribe();
   }
 
   /**
    * Create a new product
    */
-  create(product: Product): Observable<Product> {
-    return this.http.post<Product>(this.apiUrl, product);
+  createProduct(product: Product): void {
+    this.loadingSignal.set(true);
+
+    this.productHttp
+      .create(product)
+      .pipe(
+        tap({
+          next: (newProduct) => {
+            const currentResult = this.resultSignal();
+            if (currentResult) {
+              this.resultSignal.set({
+                ...currentResult,
+                items: [...currentResult.items, newProduct],
+                totalCount: currentResult.totalCount + 1,
+              });
+            }
+            this.loadingSignal.set(false);
+          },
+          error: () => {
+            this.loadingSignal.set(false);
+          },
+        })
+      )
+      .subscribe();
   }
 
   /**
    * Update an existing product
    */
-  update(product: Product): Observable<Product> {
-    return this.http.put<Product>(this.apiUrl, product);
+  updateProduct(product: Product): void {
+    this.loadingSignal.set(true);
+
+    this.productHttp
+      .update(product)
+      .pipe(
+        tap({
+          next: (updatedProduct) => {
+            const currentResult = this.resultSignal();
+            if (currentResult) {
+              this.resultSignal.set({
+                ...currentResult,
+                items: currentResult.items.map((p) =>
+                  p.id === updatedProduct.id ? updatedProduct : p
+                ),
+              });
+            }
+            this.loadingSignal.set(false);
+          },
+          error: () => {
+            this.loadingSignal.set(false);
+          },
+        })
+      )
+      .subscribe();
   }
 
   /**
-   * Soft delete a product
+   * Delete a product
    */
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteProduct(id: number): void {
+    this.loadingSignal.set(true);
+
+    this.productHttp
+      .delete(id)
+      .pipe(
+        tap({
+          next: () => {
+            const currentResult = this.resultSignal();
+            if (currentResult) {
+              this.resultSignal.set({
+                ...currentResult,
+                items: currentResult.items.filter((p) => p.id !== id),
+                totalCount: currentResult.totalCount - 1,
+              });
+            }
+            this.loadingSignal.set(false);
+          },
+          error: () => {
+            this.loadingSignal.set(false);
+          },
+        })
+      )
+      .subscribe();
   }
 
   /**
    * Search products with optional filters
    */
-  search(
-    searchParams: ProductSearchParams
-  ): Observable<PaginatedResult<Product>> {
-    let params = new HttpParams();
+  searchProducts(searchParams: ProductSearchParams = {}): void {
+    this.loadingSignal.set(true);
 
-    if (searchParams.searchTerm)
-      params = params.set('searchTerm', searchParams.searchTerm);
-    if (searchParams.categoryId !== undefined)
-      params = params.set('categoryId', searchParams.categoryId.toString());
-    if (searchParams.minPrice !== undefined)
-      params = params.set('minPrice', searchParams.minPrice.toString());
-    if (searchParams.maxPrice !== undefined)
-      params = params.set('maxPrice', searchParams.maxPrice.toString());
-    if (searchParams.inStock !== undefined)
-      params = params.set('inStock', searchParams.inStock.toString());
-    if (searchParams.sortBy) params = params.set('sortBy', searchParams.sortBy);
-    if (searchParams.sortOrder)
-      params = params.set('sortOrder', searchParams.sortOrder);
-    if (searchParams.page !== undefined)
-      params = params.set('page', searchParams.page.toString());
-    if (searchParams.pageSize !== undefined)
-      params = params.set('pageSize', searchParams.pageSize.toString());
+    // Merge with current search params to preserve filters across page changes
+    this.currentSearchParams = {
+      ...this.currentSearchParams,
+      ...searchParams,
+    };
 
-    return this.http.get<PaginatedResult<Product>>(`${this.apiUrl}/search`, {
-      params,
-    });
+    // Apply defaults only if not provided
+    const params: ProductSearchParams = {
+      ...this.currentSearchParams,
+      page: this.currentSearchParams.page ?? this.DEFAULT_PAGE,
+      pageSize: this.currentSearchParams.pageSize ?? this.DEFAULT_PAGE_SIZE,
+    };
+
+    this.productHttp
+      .search(params)
+      .pipe(
+        tap({
+          next: (result) => {
+            this.resultSignal.set(result);
+            this.loadingSignal.set(false);
+          },
+          error: () => {
+            this.loadingSignal.set(false);
+          },
+        })
+      )
+      .subscribe();
   }
 }

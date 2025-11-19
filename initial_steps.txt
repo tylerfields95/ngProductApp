@@ -3,6 +3,10 @@
         * the docker compose file for this was generated for a previous personal project using ChatGPT
         * username, password, and db name are safetly read from a .env during docker compose
             * .env is excluded from git while .env.example is tracked
+        * generate seed script for categories
+        * generate seed script for Products
+            * had claude make a script that would create 100k believable products
+                * the IDs are a little messed up from my implementation taking a couple attempts 
 
 
 * API layer 
@@ -53,6 +57,7 @@
     * Generate Search pruduct function and implement in controller
         * force claude to code review it with the lense of getting fast results with 100k rows in the DB
     * update UseExceptionHandler middleware to ensure consistent error returns
+    * add CORS middleware 
 
 
 * Angular Client
@@ -63,6 +68,10 @@
         * add bootstrap stylesheet to angular.json styles section
     * generate a new home page that 
     * generate product, category, and paginatedResult interfaces
+    * create product and category services
+        * split into http and data services
+    * create list search component and add it to the app.component
+        * break into search header, list table body, and pager footer
 
 
 * add git ignore

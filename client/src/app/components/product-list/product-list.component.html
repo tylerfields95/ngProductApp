@@ -1,0 +1,70 @@
+<div style="height: 100%; display: flex; flex-direction: column;">
+  <!-- Search Header -->
+  <div class="flex-shrink-0">
+    <app-product-search-header></app-product-search-header>
+  </div>
+
+  <!-- Product List -->
+  <div class="flex-grow-1 table-container" style="overflow: hidden; min-height: 0;">
+    <div style="height: 100%;">
+      <div *ngIf="productService.loading()" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <div *ngIf="!productService.loading() && productService.result() as result" class="table-scroll" style="height: 100%; overflow-y: auto;">
+        <table class="table table-striped table-hover mb-0">
+          <thead class="table-light sticky-top">
+            <tr>
+              <th>Product Name</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Availability</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of result.items">
+              <td>{{ product.name }}</td>
+              <td>{{ product.price | currency }}</td>
+              <td>
+                <span
+                  *ngIf="product.category"
+                  class="category-link"
+                  (click)="onCategoryClick(product.category)"
+                >
+                  {{ product.category.name }}
+                </span>
+                <span *ngIf="!product.category">N/A</span>
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [class.bg-success]="product.stockQuantity > 0"
+                  [class.bg-danger]="product.stockQuantity === 0"
+                >
+                  {{ product.stockQuantity > 0 ? 'In Stock (' + product.stockQuantity + ')' : 'Out of Stock' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination Footer -->
+  <div *ngIf="!productService.loading() && productService.result() as result" class="flex-shrink-0">
+    <app-product-pagination-footer
+      [result]="result"
+      (pageChange)="onPageChange($event)"
+    ></app-product-pagination-footer>
+  </div>
+</div>
+
+<!-- Category Detail Modal -->
+<app-category-detail-modal
+  [category]="selectedCategory"
+  [isOpen]="isModalOpen"
+  (close)="onModalClose()"
+></app-category-detail-modal>

@@ -1,0 +1,20 @@
+.table-container {
+  border-left: 1px solid #404040;
+  border-right: 1px solid #404040;
+}
+
+.table {
+  border-left: none;
+  border-right: none;
+}
+
+.category-link {
+  color: #6ea8fe;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.15s ease-in-out;
+}
+
+.category-link:hover {
+  color: #8bb9fe;
+}

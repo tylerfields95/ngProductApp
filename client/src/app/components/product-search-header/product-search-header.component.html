@@ -1,0 +1,94 @@
+<div class="card mb-0">
+  <div class="card-body">
+    <h2 class="card-title text-primary mb-3">Product Search</h2>
+
+    <div class="row g-3">
+      <!-- Search Term -->
+      <div class="col-md-6">
+        <label for="searchTerm" class="form-label">Search</label>
+        <input
+          type="text"
+          class="form-control"
+          id="searchTerm"
+          [(ngModel)]="searchTerm"
+          placeholder="Search products..."
+          (keyup.enter)="onSearch()"
+        >
+      </div>
+
+      <!-- Category -->
+      <div class="col-md-6">
+        <label for="category" class="form-label">Category</label>
+        <select
+          class="form-select"
+          id="category"
+          [(ngModel)]="categoryId"
+        >
+          <option [ngValue]="undefined">All Categories</option>
+          <option
+            *ngFor="let category of categoryService.categories()"
+            [value]="category.id"
+          >
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Min Price -->
+      <div class="col-md-3">
+        <label for="minPrice" class="form-label">Min Price</label>
+        <input
+          type="number"
+          class="form-control"
+          id="minPrice"
+          [(ngModel)]="minPrice"
+          placeholder="0.00"
+          step="0.01"
+        >
+      </div>
+
+      <!-- Max Price -->
+      <div class="col-md-3">
+        <label for="maxPrice" class="form-label">Max Price</label>
+        <input
+          type="number"
+          class="form-control"
+          id="maxPrice"
+          [(ngModel)]="maxPrice"
+          placeholder="999.99"
+          step="0.01"
+        >
+      </div>
+
+      <!-- In Stock -->
+      <div class="col-md-3">
+        <label for="inStock" class="form-label">Availability</label>
+        <select
+          class="form-select"
+          id="inStock"
+          [(ngModel)]="inStock"
+        >
+          <option [ngValue]="undefined">All Products</option>
+          <option [ngValue]="true">In Stock</option>
+          <option [ngValue]="false">Out of Stock</option>
+        </select>
+      </div>
+
+      <!-- Buttons -->
+      <div class="col-md-3 d-flex align-items-end">
+        <button
+          class="btn btn-primary me-2"
+          (click)="onSearch()"
+        >
+          Search
+        </button>
+        <button
+          class="btn btn-secondary"
+          (click)="onClear()"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

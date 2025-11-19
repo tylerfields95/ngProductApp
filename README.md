@@ -9,44 +9,77 @@ A full-stack product management application built with .NET Core Web API and Ang
 ### Prerequisites
 
 - .NET 8.0 SDK or later
-- Node.js 18+ and npm
-- PostgreSQL 14+
+- Node.js 18+ and npm (or pnpm)
+- Docker and Docker Compose (for PostgreSQL)
 - Git
 
 ### Setup and Run Instructions
 
 1. **Database Setup**
 
+   This project uses PostgreSQL running in a Docker container.
+
    ```bash
    # Navigate to database directory
    cd database
 
-   # Create .env file with your PostgreSQL credentials
-   # look at .example.env
+   # Create .env file with your PostgreSQL credentials (see .env.example)
    # POSTGRES_USER=your_username
    # POSTGRES_PASSWORD=your_password
    # POSTGRES_DB=practicedb
 
-   # Run migrations (from api/PracticeApi directory)
+   # Start PostgreSQL container using Docker Compose
+   docker-compose up -d
+
+   # Install EF Core tools if not already installed
+   dotnet tool install --global dotnet-ef
+
+   # Navigate to API directory and run initial migration
    cd ../api/PracticeApi
+   dotnet ef migrations add InitialMigration
    dotnet ef database update
 
-   !!run seed scripts found under database/scripts!!
+   # Add Product and Category models migration
+   dotnet ef migrations add AddCategoriesAndProducts
+   dotnet ef database update
+
+   # Run seed scripts to populate database
+   # Execute SQL scripts found under database/scripts/
+   # - Categories seed script (populates category lookup table)
+   # - Products seed script (generates ~100k sample products)
    ```
+
+   **Required NuGet Packages** (already included in project):
+
+   - Npgsql.EntityFrameworkCore.PostgreSQL (v8.0.11)
+   - Microsoft.EntityFrameworkCore.Tools (v8.0.11)
+   - Microsoft.EntityFrameworkCore.Design (v8.0.11)
+   - DotNetEnv (v3.1.1)
 
 2. **Run API**
 
    ```bash
    cd api/PracticeApi
-   dotnet run
+   dotnet run (or launch in VS)
    # API will be available at http://localhost:5258
+   # Swagger UI available at http://localhost:5258/swagger
    ```
 
 3. **Run Client**
+
+   This project was developed using pnpm as the package manager, but npm works as well.
+
    ```bash
    cd client
+
+   # Using pnpm (as used in development)
+   pnpm install
+   pnpm start
+
+   # OR using npm
    npm install
    npm start
+
    # Client will be available at http://localhost:4200
    ```
 

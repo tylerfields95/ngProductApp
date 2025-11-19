@@ -3,7 +3,6 @@
 A full-stack product management application built with .NET Core Web API and Angular, featuring a searchable product catalog with category management and pagination.
 
 ![Application Preview](./screenshots/preview.png)
-*Dark-themed product search interface with advanced filtering and pagination*
 
 ## Quick Start
 
@@ -32,7 +31,7 @@ A full-stack product management application built with .NET Core Web API and Ang
    cd ../api/PracticeApi
    dotnet ef database update
 
-   # run seed scripts found under database/scripts
+   !!run seed scripts found under database/scripts!!
    ```
 
 2. **Run API**

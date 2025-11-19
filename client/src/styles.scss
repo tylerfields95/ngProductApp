@@ -1,1 +1,119 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Dark Theme Variables */
+:root {
+  --bs-body-bg: #1a1a1a;
+  --bs-body-color: #e0e0e0;
+  --bs-border-color: #404040;
+  --bs-dark-bg: #212529;
+  --bs-secondary-bg: #2d2d2d;
+}
+
+body {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+/* Dark theme for Bootstrap components */
+.card {
+  background-color: var(--bs-secondary-bg);
+  border-color: var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+.form-control,
+.form-select {
+  background-color: #2d2d2d;
+  border-color: var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+.form-control::placeholder {
+  color: #808080;
+  opacity: 1;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: #2d2d2d;
+  border-color: #0d6efd;
+  color: var(--bs-body-color);
+}
+
+.form-label {
+  color: #b0b0b0;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.btn-secondary {
+  background-color: #404040;
+  border-color: #404040;
+  color: var(--bs-body-color);
+}
+
+.btn-secondary:hover {
+  background-color: #505050;
+  border-color: #505050;
+}
+
+.table {
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
+  --bs-table-color: var(--bs-body-color);
+  --bs-table-bg: transparent;
+  --bs-table-striped-color: var(--bs-body-color);
+  --bs-table-active-color: var(--bs-body-color);
+  --bs-table-hover-color: var(--bs-body-color);
+}
+
+.table > :not(caption) > * > * {
+  background-color: transparent;
+  border-bottom-color: var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.table-hover > tbody > tr:hover > * {
+  background-color: rgba(255, 255, 255, 0.075);
+}
+
+.table-light {
+  background-color: #2d2d2d;
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
+}
+
+.text-primary {
+  color: #6ea8fe !important;
+}
+
+.text-muted {
+  color: #808080 !important;
+}
+
+.pagination {
+  --bs-pagination-bg: #2d2d2d;
+  --bs-pagination-border-color: var(--bs-border-color);
+  --bs-pagination-hover-bg: #404040;
+  --bs-pagination-hover-border-color: var(--bs-border-color);
+  --bs-pagination-focus-bg: #404040;
+  --bs-pagination-disabled-bg: #1a1a1a;
+  --bs-pagination-disabled-border-color: var(--bs-border-color);
+  --bs-pagination-color: var(--bs-body-color);
+  --bs-pagination-hover-color: var(--bs-body-color);
+  --bs-pagination-active-bg: #0d6efd;
+  --bs-pagination-active-border-color: #0d6efd;
+  --bs-pagination-disabled-color: #707070;
+}
